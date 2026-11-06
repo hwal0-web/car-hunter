@@ -7,7 +7,7 @@
 <meta name="description" content="Your personal New Zealand car listing tracker.">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
-<title>Car Hunter</title>
+<title>Car Hunter v2</title>
 <style>
 :root{color-scheme:dark;--bg:#0b1017;--panel:#121a24;--panel2:#192432;--line:#263445;--muted:#9aabba;--text:#edf4fa;--green:#a7f36b;--blue:#81c8ff;--red:#ff8b8b}
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 85% -10%,#1b3441 0,transparent 42%),var(--bg);color:var(--text);font:15px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif}
@@ -22,21 +22,24 @@ form{display:grid;grid-template-columns:1fr 1fr;gap:10px}.field{display:flex;fle
 footer{max-width:1120px;margin:auto;padding:0 22px 30px;color:#738597;font-size:11px}
 @media(max-width:760px){header{padding-top:20px}.layout{grid-template-columns:1fr}.stats{gap:8px}.stat{padding:12px}.stat strong{font-size:22px}.stat span{font-size:11px}.status{font-size:10px}.intro{padding-top:16px}}
 @media(max-width:420px){form{grid-template-columns:1fr}.field.full,.form-actions{grid-column:auto}.stats{grid-template-columns:repeat(3,1fr)}.stat strong{font-size:19px}}
+
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.toolbar button,.toolbar label{font-size:12px}.toolbar label{padding:9px 11px;border:1px solid var(--line);background:var(--panel2);border-radius:10px;cursor:pointer;font-weight:750}.toolbar input[type=file]{display:none}.history{color:var(--muted);font-size:12px;margin:6px 0}.drop{color:var(--green);font-size:12px;font-weight:800}.hint{color:var(--muted);font-size:12px}.alert{border:1px solid #4c6740;background:#1c3025;border-radius:12px;padding:12px;margin:10px 0}.alert strong{color:var(--green)}.searchrow{display:flex;align-items:center;justify-content:space-between;gap:9px;padding:8px 0;border-bottom:1px solid var(--line)}.searchrow:last-child{border-bottom:0}.searchrow a{color:var(--blue);font-size:12px;white-space:nowrap}.searchrow span{font-size:13px}.filters-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.filters-grid div{background:#0c131c;border-radius:10px;padding:10px}.filters-grid small{color:var(--muted);display:block}.filters-grid strong{font-size:14px}#message{display:none;margin-bottom:12px;padding:12px;border-radius:9px;border:1px solid var(--line);background:var(--panel2)}#message.visible{display:block}@media(max-width:420px){.filters-grid{grid-template-columns:1fr 1fr}.searchrow{align-items:flex-start}}
 </style>
 </head>
 <body>
 <header><div class="brand"><div class="logo">⌁</div><div><div class="eyebrow">Personal vehicle radar</div><h1>Car Hunter</h1></div></div><div class="status" id="saveStatus">Saved on this device</div></header>
 <main>
-<section class="intro"><h2>Find the right car.<br><span style="color:var(--green)">Skip the noise.</span></h2><p>Your shortlist for New Zealand listings. Add cars you spot on Trade Me, compare the details, and keep your favourites in one place.</p></section>
-<section class="stats"><div class="stat"><span>Cars tracked</span><strong id="countAll">0</strong></div><div class="stat"><span>Shortlisted</span><strong id="countSaved">0</strong></div><div class="stat"><span>Budget ceiling</span><strong>$20k</strong></div></section>
+<section class="intro"><h2>Find the right car.<br><span style="color:var(--green)">Skip the noise.</span></h2><p>Your shortlist for Auckland. Track your chosen Honda and Lexus models, record asking-price changes, and spot drops of NZ$500 or more.</p></section>
+<section class="stats"><div class="stat"><span>Cars tracked</span><strong id="countAll">0</strong></div><div class="stat"><span>Shortlisted</span><strong id="countSaved">0</strong></div><div class="stat"><span>Price drops ≥$500</span><strong id="countDrops">0</strong></div></section><div id="message" role="status" aria-live="polite"></div>
 <div class="layout"><section>
-<div class="panel"><div class="panel-head"><h3>Your car shortlist</h3><span class="sub">Stored on this device</span></div><div id="listings"><div class="empty"><strong>No cars tracked yet</strong>Add a listing using the form to start your shortlist.</div></div></div>
-<div class="panel"><div class="panel-head"><h3>Search targets</h3><span class="sub">Your saved searches</span></div><div class="searches"><span class="chip"><b>01</b> Lexus CT200h</span><span class="chip"><b>02</b> Honda CR-Z</span><span class="chip"><b>03</b> Honda Civic</span></div><p class="notice">Trade Me saved-search email alerts are your discovery source. This first version does not read your inbox or monitor Trade Me automatically yet.</p></div>
+<div class="panel"><div class="panel-head"><h3>Your car shortlist</h3><span class="sub">Stored on this device</span></div><div class="toolbar"><button type="button" class="secondary" id="exportBtn">Export backup (.json)</button><label for="importFile">Import backup (.json)<input type="file" id="importFile" accept=".json,application/json"></label></div><p class="hint">Back up before switching devices. Import replaces the cars stored on this device. It does not automatically sync.</p><div id="listings"><div class="empty"><strong>No cars tracked yet</strong>Add a listing using the form to start your shortlist.</div></div></div>
+<div class="panel"><div class="panel-head"><h3>Search targets</h3><span class="sub">8 Trade Me saved searches</span></div><div id="searchTargets"></div><p class="notice">Each link opens a Trade Me search. Set the Auckland, 2013+, ≤100,000 km and ≤NZ$20,000 filters there, then save the search and enable Trade Me notifications. Car Hunter does not fetch Trade Me listings.</p></div>
+<div class="panel"><div class="panel-head"><h3>Price-drop alerts</h3><span class="sub">On-device, after price updates</span></div><div id="alerts" class="hint">No price drops recorded yet.</div><p class="notice">Alerts appear in this dashboard after you record a lower asking price. They are not background push or email notifications.</p></div>
 </section>
 <aside>
 <div class="panel"><div class="panel-head"><h3>Add a car</h3><span class="sub">Manual entry</span></div>
 <form id="carForm">
-<div class="field full"><label for="title">Car / model</label><input id="title" placeholder="e.g. 2013 Honda CR-Z" required></div>
+<div class="field full"><label for="model">Target model</label><select id="model" required><option value="">Select model</option><option>Honda Civic</option><option>Honda Grace</option><option>Honda Accord</option><option>Honda CR-Z</option><option>Lexus IS 250</option><option>Lexus IS 350</option><option>Lexus IS 300h</option><option>Lexus CT 200h</option></select></div><div class="field full"><label for="title">Listing title</label><input id="title" placeholder="e.g. 2015 Honda Civic Hybrid" required></div>
 <div class="field"><label for="price">Price (NZD)</label><input id="price" type="number" min="0" step="1" placeholder="12990" required></div>
 <div class="field"><label for="km">Kilometres</label><input id="km" type="number" min="0" step="1" placeholder="85000" required></div>
 <div class="field"><label for="year">Year</label><input id="year" type="number" min="1990" max="2035" placeholder="2013"></div>
@@ -44,21 +47,77 @@ footer{max-width:1120px;margin:auto;padding:0 22px 30px;color:#738597;font-size:
 <div class="field full"><label for="url">Trade Me listing URL</label><input id="url" type="url" placeholder="https://www.trademe.co.nz/..."></div>
 <div class="form-actions"><button type="submit">Add to shortlist</button><button class="secondary" type="reset">Clear</button></div>
 </form></div>
-<div class="panel"><h3>Current filters</h3><p class="sub" style="margin:12px 0 0">Maximum price: <b style="color:var(--text)">$20,000</b><br>Maximum mileage: <b style="color:var(--text)">Under 100,000 km</b><br>Transmission: <b style="color:var(--text)">Automatic</b><br>Preference: <b style="color:var(--text)">Japanese makes</b><br>Exclude: <b style="color:var(--text)">Mazda Axela</b></p></div>
+<div class="panel"><h3>Search filters</h3><div class="filters-grid" style="margin-top:12px"><div><small>Maximum price</small><strong>NZ$20,000</strong></div><div><small>Maximum kilometres</small><strong>100,000 km</strong></div><div><small>Minimum year</small><strong>2013</strong></div><div><small>Location</small><strong>Auckland</strong></div><div><small>Price drop alert</small><strong>NZ$500+</strong></div><div><small>Tracked models</small><strong>8</strong></div></div><p class="notice">The form warns about cars outside your limits but still lets you save them if you choose. Transmission is not a mandatory filter.</p></div>
 </aside></div>
-</main><footer>Car Hunter · First build · Your entries stay in this browser. Cross-device sync and automated email processing are not connected yet.</footer>
+</main><footer>Car Hunter v2 · Browser-local data · Trade Me searches and notifications are managed on Trade Me. No automated scraping, email processing or device sync.</footer>
 <script>
-const KEY='car-hunter-listings-v1';let cars=[];try{cars=JSON.parse(localStorage.getItem(KEY)||'[]')}catch(e){cars=[]}
-const $=id=>document.getElementById(id);const money=n=>new Intl.NumberFormat('en-NZ',{style:'currency',currency:'NZD',maximumFractionDigits:0}).format(n);
-function save(){localStorage.setItem(KEY,JSON.stringify(cars));$('saveStatus').textContent='Saved just now';render()}
-function render(){$('countAll').textContent=cars.length;$('countSaved').textContent=cars.filter(c=>c.saved).length;const root=$('listings');if(!cars.length){root.innerHTML='<div class="empty"><strong>No cars tracked yet</strong>Add a listing using the form to start your shortlist.</div>';return}
-root.innerHTML=cars.map(c=>'<article class="listing"><div><h4>'+esc(c.title)+'</h4><p>'+(c.year?esc(c.year)+' · ':'')+Number(c.km).toLocaleString('en-NZ')+' km · '+esc(c.transmission)+'</p><div class="listing-actions"><button class="secondary" data-save="'+c.id+'">'+(c.saved?'★ Shortlisted':'☆ Shortlist')+'</button>'+(c.url?'<button class="secondary" data-open="'+c.id+'">Open listing ↗</button>':'')+'<button class="danger" data-delete="'+c.id+'">Remove</button></div></div><div class="price">'+money(c.price)+'</div></article>').join('');
-root.querySelectorAll('[data-save]').forEach(b=>b.onclick=()=>{const c=cars.find(x=>x.id===b.dataset.save);c.saved=!c.saved;save()});
-root.querySelectorAll('[data-delete]').forEach(b=>b.onclick=()=>{cars=cars.filter(x=>x.id!==b.dataset.delete);save()});
-root.querySelectorAll('[data-open]').forEach(b=>b.onclick=()=>{const c=cars.find(x=>x.id===b.dataset.open);if(c?.url)window.open(c.url,'_blank','noopener')});
+'use strict';
+const KEY='car-hunter-listings-v1'; // Keep the original storage key so existing entries remain available.
+const LIMITS={price:20000,km:100000,year:2013,drop:500};
+const MODELS=['Honda Civic','Honda Grace','Honda Accord','Honda CR-Z','Lexus IS 250','Lexus IS 350','Lexus IS 300h','Lexus CT 200h'];
+const $=id=>document.getElementById(id);
+const money=n=>new Intl.NumberFormat('en-NZ',{style:'currency',currency:'NZD',maximumFractionDigits:0}).format(n);
+const esc=s=>String(s??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+const today=()=>new Date().toISOString().slice(0,10);
+const idgen=()=>globalThis.crypto?.randomUUID?.() || String(Date.now())+Math.random().toString(36).slice(2);
+const validUrl=u=>!u || /^https:\/\/(?:www\.)?trademe\.co\.nz\//i.test(u);
+function showMessage(t){$('message').textContent=t;$('message').classList.add('visible')}
+let cars=[];
+try{const loaded=JSON.parse(localStorage.getItem(KEY)||'[]'); if(Array.isArray(loaded))cars=loaded.map(normalise).filter(Boolean)}catch(e){showMessage('Existing saved data could not be read. No data has been overwritten.');}
+function normalise(c){
+ if(!c||typeof c!=='object'||typeof c.title!=='string'||!Number.isFinite(Number(c.price))||Number(c.price)<0)return null;
+ const price=Number(c.price);
+ let history=Array.isArray(c.history)?c.history.filter(h=>h&&Number.isFinite(Number(h.price))&&Number(h.price)>=0&&/^\d{4}-\d{2}-\d{2}$/.test(h.date)).slice(0,500).map(h=>({price:Number(h.price),date:h.date})):[];
+ if(!history.length) history=[{price,date:today()}];
+ return {id:String(c.id||idgen()),title:c.title.slice(0,250),model:MODELS.includes(c.model)?c.model:'',price,km:Number.isFinite(Number(c.km))?Number(c.km):0,year:c.year?String(c.year):'',transmission:String(c.transmission||'Unknown'),url:validUrl(String(c.url||''))?String(c.url||''):'',saved:!!c.saved,history};
 }
-function esc(s){return String(s??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]))}
-$('carForm').addEventListener('submit',e=>{e.preventDefault();const c={id:crypto.randomUUID?crypto.randomUUID():String(Date.now()),title:$('title').value.trim(),price:Number($('price').value),km:Number($('km').value),year:$('year').value,transmission:$('transmission').value,url:$('url').value.trim(),saved:false};if(c.url&&!/^https:\/\//i.test(c.url)){alert('Please use a secure https listing link.');return}cars.unshift(c);save();e.target.reset()});
+function persist(){try{localStorage.setItem(KEY,JSON.stringify(cars));$('saveStatus').textContent='Saved on this device';render()}catch(e){showMessage('Could not save. Check your browser storage settings.')}}
+function dropSinceStart(c){return c.history.length>1 ? Math.max(0,c.history[0].price-c.price):0}
+function latestDrop(c){if(c.history.length<2)return 0;return Math.max(0,c.history[c.history.length-2].price-c.history[c.history.length-1].price)}
+function render(){
+ $('countAll').textContent=cars.length;$('countSaved').textContent=cars.filter(c=>c.saved).length;
+ const dropped=cars.filter(c=>latestDrop(c)>=LIMITS.drop);$('countDrops').textContent=dropped.length;
+ $('alerts').innerHTML=dropped.length?dropped.map(c=>'<div class="alert"><strong>'+esc(c.title)+'</strong><div>Latest recorded drop: '+money(latestDrop(c))+' · Current '+money(c.price)+'</div></div>').join(''):'No latest recorded price drops of NZ$500 or more.';
+ const root=$('listings');if(!cars.length){root.innerHTML='<div class="empty"><strong>No cars tracked yet</strong>Add a listing using the form to start your shortlist.</div>';return}
+ root.innerHTML=cars.map(c=>{
+ const history=c.history.map(h=>esc(h.date)+': '+money(h.price)).join(' → ');
+ const change=latestDrop(c)>=LIMITS.drop?'<div class="drop">↓ '+money(latestDrop(c))+' latest price drop</div>':'';
+ return '<article class="listing"><div><h4>'+esc(c.title)+'</h4><p>'+esc(c.model||'Uncategorised')+' · '+(c.year?esc(c.year)+' · ':'')+Number(c.km).toLocaleString('en-NZ')+' km · '+esc(c.transmission)+'</p>'+change+'<details class="history"><summary>Price history ('+c.history.length+')</summary>'+history+'</details><div class="listing-actions"><button class="secondary" data-act="save" data-id="'+esc(c.id)+'">'+(c.saved?'★ Shortlisted':'☆ Shortlist')+'</button><button class="secondary" data-act="price" data-id="'+esc(c.id)+'">Update price</button>'+(c.url?'<button class="secondary" data-act="open" data-id="'+esc(c.id)+'">Open listing ↗</button>':'')+'<button class="danger" data-act="delete" data-id="'+esc(c.id)+'">Remove</button></div></div><div class="price">'+money(c.price)+'</div></article>';}).join('');
+}
+$('listings').addEventListener('click',e=>{
+ const b=e.target.closest('button[data-act]');if(!b)return;
+ const c=cars.find(x=>x.id===b.dataset.id);if(!c)return;
+ if(b.dataset.act==='save'){c.saved=!c.saved;persist()}
+ if(b.dataset.act==='open'&&c.url)window.open(c.url,'_blank','noopener,noreferrer');
+ if(b.dataset.act==='delete'&&confirm('Remove this car and its price history?')){cars=cars.filter(x=>x.id!==c.id);persist()}
+ if(b.dataset.act==='price'){
+ const raw=prompt('Enter the new asking price in NZD (numbers only):',String(c.price));if(raw===null)return;
+ if(!/^\d+(?:\.\d{1,2})?$/.test(raw.trim())){alert('Enter a valid non-negative price.');return}
+ const next=Number(raw);if(next===c.price){showMessage('Price unchanged; no new history entry added.');return}
+ const previous=c.price;c.price=next;c.history.push({price:next,date:today()});persist();
+ showMessage(previous-next>=LIMITS.drop?'Price-drop alert: '+c.title+' dropped '+money(previous-next)+' to '+money(next)+'.':'Updated '+c.title+' to '+money(next)+'.');
+ }
+});
+$('carForm').addEventListener('submit',e=>{
+ e.preventDefault();const price=Number($('price').value),km=Number($('km').value),year=Number($('year').value);
+ if(!Number.isFinite(price)||price<0||!Number.isFinite(km)||km<0){alert('Enter valid price and kilometre values.');return}
+ const url=$('url').value.trim();if(!validUrl(url)){alert('Use a https://www.trademe.co.nz/... listing URL, or leave it blank.');return}
+ const outside=[];if(price>LIMITS.price)outside.push('price');if(km>LIMITS.km)outside.push('kilometres');if(year&&year<LIMITS.year)outside.push('year');
+ if(outside.length&&!confirm('This listing is outside your '+outside.join(', ')+' target(s). Add it anyway?'))return;
+ cars.unshift(normalise({id:idgen(),title:$('title').value.trim(),model:$('model').value,price,km,year:year||'',transmission:$('transmission').value,url,saved:false,history:[{price,date:today()}]}));persist();e.target.reset();showMessage('Car added. You can update its price later to track changes.');
+});
+$('searchTargets').innerHTML=MODELS.map(m=>'<div class="searchrow"><span>'+esc(m)+'</span><a target="_blank" rel="noopener noreferrer" href="https://www.trademe.co.nz/a/motors/cars">Search on Trade Me ↗</a></div>').join('');
+$('exportBtn').addEventListener('click',()=>{const payload={app:'car-hunter',version:2,exportedAt:new Date().toISOString(),cars};const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});const u=URL.createObjectURL(blob);const a=document.createElement('a');a.href=u;a.download='car-hunter-backup-'+today()+'.json';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1000)});
+$('importFile').addEventListener('change',async e=>{
+ const file=e.target.files[0];if(!file)return;
+ try{if(file.size>5*1024*1024)throw Error('Backup file is too large (5 MB maximum).');
+ const parsed=JSON.parse(await file.text());const entries=Array.isArray(parsed)?parsed:parsed?.cars;
+ if(!Array.isArray(entries)||entries.length>5000)throw Error('Invalid Car Hunter backup.');
+ const next=entries.map(normalise);if(next.some(x=>!x))throw Error('Backup includes invalid car records.');
+ if(!confirm('Import '+next.length+' cars? This REPLACES the saved cars on this device. Export a backup first.'))return;
+ cars=next;persist();showMessage('Imported '+cars.length+' cars successfully.');
+ }catch(err){alert('Import failed: '+err.message)}finally{e.target.value=''}
+});
 render();
 if('serviceWorker'in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
 </script>
