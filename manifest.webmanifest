@@ -1,0 +1,13 @@
+{
+  "name": "Car Hunter",
+  "short_name": "Car Hunter",
+  "description": "Your personal New Zealand car listing tracker.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0b1017",
+  "theme_color": "#10151d",
+  "icons": [
+    {"src":"icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
+  ]
+}
