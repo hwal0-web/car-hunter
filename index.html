@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#10151d">
+<meta name="description" content="Your personal New Zealand car listing tracker.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<title>Car Hunter</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1017;--panel:#121a24;--panel2:#192432;--line:#263445;--muted:#9aabba;--text:#edf4fa;--green:#a7f36b;--blue:#81c8ff;--red:#ff8b8b}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 85% -10%,#1b3441 0,transparent 42%),var(--bg);color:var(--text);font:15px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif}
+header{max-width:1120px;margin:auto;padding:28px 22px 18px;display:flex;justify-content:space-between;align-items:center;gap:16px}.brand{display:flex;align-items:center;gap:12px}.logo{width:42px;height:42px;border-radius:13px;background:var(--green);color:#10170c;display:grid;place-items:center;font-size:23px;font-weight:900}.eyebrow{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--green);font-weight:800}.brand h1{font-size:24px;line-height:1.1;margin:2px 0 0}.status{border:1px solid var(--line);border-radius:99px;padding:7px 11px;color:var(--muted);font-size:12px}
+main{max-width:1120px;margin:auto;padding:0 22px 60px}.intro{padding:22px 0 26px}.intro h2{font-size:clamp(27px,5vw,42px);letter-spacing:-.04em;line-height:1.08;margin:0 0 10px}.intro p{margin:0;color:var(--muted);max-width:620px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:8px 0 24px}.stat,.panel{background:linear-gradient(145deg,#16212d,#111923);border:1px solid var(--line);border-radius:17px}.stat{padding:16px}.stat span{display:block;color:var(--muted);font-size:12px}.stat strong{font-size:26px;letter-spacing:-.04em}
+.layout{display:grid;grid-template-columns: minmax(0,1.6fr) minmax(260px,.8fr);gap:16px;align-items:start}.panel{padding:18px;margin-bottom:16px}.panel-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}.panel h3{font-size:16px;margin:0}.sub{color:var(--muted);font-size:12px}
+button,input,select{font:inherit}button{border:0;border-radius:10px;padding:10px 14px;background:var(--green);color:#10170c;font-weight:800;cursor:pointer}button.secondary{background:var(--panel2);color:var(--text);border:1px solid var(--line)}button.danger{background:#392128;color:#ffb4b4;border:1px solid #63333c}button:disabled{opacity:.45;cursor:not-allowed}
+form{display:grid;grid-template-columns:1fr 1fr;gap:10px}.field{display:flex;flex-direction:column;gap:5px}.field.full{grid-column:1/-1}.field label{font-size:12px;color:var(--muted)}input,select{width:100%;min-width:0;background:#0c131c;color:var(--text);border:1px solid var(--line);border-radius:9px;padding:10px 11px;outline:none}input:focus,select:focus{border-color:var(--green)}.form-actions{grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap;margin-top:3px}
+.searches{display:flex;flex-wrap:wrap;gap:8px}.chip{border:1px solid var(--line);background:#0d151e;border-radius:99px;padding:7px 11px;color:#c6d4df;font-size:12px}.chip b{color:var(--green);margin-right:5px}
+.listing{border-top:1px solid var(--line);padding:15px 0;display:flex;justify-content:space-between;gap:12px}.listing:first-of-type{border-top:0}.listing h4{margin:0 0 3px;font-size:15px}.listing p{margin:0;color:var(--muted);font-size:12px}.price{font-weight:850;color:var(--green);white-space:nowrap}.listing-actions{display:flex;gap:6px;margin-top:9px;flex-wrap:wrap}.listing-actions button{font-size:11px;padding:6px 9px}.empty{padding:24px 8px;text-align:center;color:var(--muted)}.empty strong{display:block;color:var(--text);margin-bottom:4px}.notice{font-size:12px;color:var(--muted);border-top:1px solid var(--line);padding-top:12px;margin-top:14px}
+footer{max-width:1120px;margin:auto;padding:0 22px 30px;color:#738597;font-size:11px}
+@media(max-width:760px){header{padding-top:20px}.layout{grid-template-columns:1fr}.stats{gap:8px}.stat{padding:12px}.stat strong{font-size:22px}.stat span{font-size:11px}.status{font-size:10px}.intro{padding-top:16px}}
+@media(max-width:420px){form{grid-template-columns:1fr}.field.full,.form-actions{grid-column:auto}.stats{grid-template-columns:repeat(3,1fr)}.stat strong{font-size:19px}}
+</style>
+</head>
+<body>
+<header><div class="brand"><div class="logo">⌁</div><div><div class="eyebrow">Personal vehicle radar</div><h1>Car Hunter</h1></div></div><div class="status" id="saveStatus">Saved on this device</div></header>
+<main>
+<section class="intro"><h2>Find the right car.<br><span style="color:var(--green)">Skip the noise.</span></h2><p>Your shortlist for New Zealand listings. Add cars you spot on Trade Me, compare the details, and keep your favourites in one place.</p></section>
+<section class="stats"><div class="stat"><span>Cars tracked</span><strong id="countAll">0</strong></div><div class="stat"><span>Shortlisted</span><strong id="countSaved">0</strong></div><div class="stat"><span>Budget ceiling</span><strong>$20k</strong></div></section>
+<div class="layout"><section>
+<div class="panel"><div class="panel-head"><h3>Your car shortlist</h3><span class="sub">Stored on this device</span></div><div id="listings"><div class="empty"><strong>No cars tracked yet</strong>Add a listing using the form to start your shortlist.</div></div></div>
+<div class="panel"><div class="panel-head"><h3>Search targets</h3><span class="sub">Your saved searches</span></div><div class="searches"><span class="chip"><b>01</b> Lexus CT200h</span><span class="chip"><b>02</b> Honda CR-Z</span><span class="chip"><b>03</b> Honda Civic</span></div><p class="notice">Trade Me saved-search email alerts are your discovery source. This first version does not read your inbox or monitor Trade Me automatically yet.</p></div>
+</section>
+<aside>
+<div class="panel"><div class="panel-head"><h3>Add a car</h3><span class="sub">Manual entry</span></div>
+<form id="carForm">
+<div class="field full"><label for="title">Car / model</label><input id="title" placeholder="e.g. 2013 Honda CR-Z" required></div>
+<div class="field"><label for="price">Price (NZD)</label><input id="price" type="number" min="0" step="1" placeholder="12990" required></div>
+<div class="field"><label for="km">Kilometres</label><input id="km" type="number" min="0" step="1" placeholder="85000" required></div>
+<div class="field"><label for="year">Year</label><input id="year" type="number" min="1990" max="2035" placeholder="2013"></div>
+<div class="field"><label for="transmission">Transmission</label><select id="transmission"><option>Automatic</option><option>Manual</option><option>Unknown</option></select></div>
+<div class="field full"><label for="url">Trade Me listing URL</label><input id="url" type="url" placeholder="https://www.trademe.co.nz/..."></div>
+<div class="form-actions"><button type="submit">Add to shortlist</button><button class="secondary" type="reset">Clear</button></div>
+</form></div>
+<div class="panel"><h3>Current filters</h3><p class="sub" style="margin:12px 0 0">Maximum price: <b style="color:var(--text)">$20,000</b><br>Maximum mileage: <b style="color:var(--text)">Under 100,000 km</b><br>Transmission: <b style="color:var(--text)">Automatic</b><br>Preference: <b style="color:var(--text)">Japanese makes</b><br>Exclude: <b style="color:var(--text)">Mazda Axela</b></p></div>
+</aside></div>
+</main><footer>Car Hunter · First build · Your entries stay in this browser. Cross-device sync and automated email processing are not connected yet.</footer>
+<script>
+const KEY='car-hunter-listings-v1';let cars=[];try{cars=JSON.parse(localStorage.getItem(KEY)||'[]')}catch(e){cars=[]}
+const $=id=>document.getElementById(id);const money=n=>new Intl.NumberFormat('en-NZ',{style:'currency',currency:'NZD',maximumFractionDigits:0}).format(n);
+function save(){localStorage.setItem(KEY,JSON.stringify(cars));$('saveStatus').textContent='Saved just now';render()}
+function render(){$('countAll').textContent=cars.length;$('countSaved').textContent=cars.filter(c=>c.saved).length;const root=$('listings');if(!cars.length){root.innerHTML='<div class="empty"><strong>No cars tracked yet</strong>Add a listing using the form to start your shortlist.</div>';return}
+root.innerHTML=cars.map(c=>'<article class="listing"><div><h4>'+esc(c.title)+'</h4><p>'+(c.year?esc(c.year)+' · ':'')+Number(c.km).toLocaleString('en-NZ')+' km · '+esc(c.transmission)+'</p><div class="listing-actions"><button class="secondary" data-save="'+c.id+'">'+(c.saved?'★ Shortlisted':'☆ Shortlist')+'</button>'+(c.url?'<button class="secondary" data-open="'+c.id+'">Open listing ↗</button>':'')+'<button class="danger" data-delete="'+c.id+'">Remove</button></div></div><div class="price">'+money(c.price)+'</div></article>').join('');
+root.querySelectorAll('[data-save]').forEach(b=>b.onclick=()=>{const c=cars.find(x=>x.id===b.dataset.save);c.saved=!c.saved;save()});
+root.querySelectorAll('[data-delete]').forEach(b=>b.onclick=()=>{cars=cars.filter(x=>x.id!==b.dataset.delete);save()});
+root.querySelectorAll('[data-open]').forEach(b=>b.onclick=()=>{const c=cars.find(x=>x.id===b.dataset.open);if(c?.url)window.open(c.url,'_blank','noopener')});
+}
+function esc(s){return String(s??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]))}
+$('carForm').addEventListener('submit',e=>{e.preventDefault();const c={id:crypto.randomUUID?crypto.randomUUID():String(Date.now()),title:$('title').value.trim(),price:Number($('price').value),km:Number($('km').value),year:$('year').value,transmission:$('transmission').value,url:$('url').value.trim(),saved:false};if(c.url&&!/^https:\/\//i.test(c.url)){alert('Please use a secure https listing link.');return}cars.unshift(c);save();e.target.reset()});
+render();
+if('serviceWorker'in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+</script>
+</body></html>
